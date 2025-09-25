@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.dev.mybatisautomapper.mapper.ColumnMapper">
+
+    <select id="selectColumns" parameterType="string" resultType="org.dev.mybatisautomapper.model.ColumnInfo">
+        SELECT COL.TABLE_NAME           AS TABLE_NM
+             , TAB_COM.COMMENTS         AS TABLE_COMMENTS
+             , COL.COLUMN_NAME          AS COLUMN_NAME
+             , COL_COMMENTS.COMMENTS    AS COLUMN_COMMENTS
+             , CASE
+                 WHEN COL.CHAR_LENGTH IS NOT NULL AND COL.CHAR_LENGTH != 0 THEN COL.DATA_TYPE || '(' || COL.CHAR_LENGTH || ')'
+                 ELSE COL.DATA_TYPE
+               END AS DATA_TYPE
+             , CASE
+                 WHEN PK_COLUMNS.COLUMN_NAME IS NOT NULL THEN 'Y'
+                 ELSE 'N'
+               END AS PRIMARY_KEY
+
+        FROM USER_TAB_COLUMNS COL
+
+        LEFT OUTER JOIN ALL_TAB_COMMENTS TAB_COM ON TAB_COM.OWNER = 'COMET'
+                                                AND COL.TABLE_NAME = TAB_COM.TABLE_NAME
+
+        LEFT OUTER JOIN USER_COL_COMMENTS COL_COMMENTS ON COL.TABLE_NAME = COL_COMMENTS.TABLE_NAME
+                                                      AND COL.COLUMN_NAME = COL_COMMENTS.COLUMN_NAME
+
+        LEFT OUTER JOIN (
+                            SELECT CONS_COLUMS.TABLE_NAME
+                                 , CONS_COLUMS.COLUMN_NAME
+
+                            FROM USER_CONS_COLUMNS CONS_COLUMS
+
+                            INNER JOIN USER_CONSTRAINTS USER_CON ON CONS_COLUMS.OWNER = USER_CON.OWNER
+                                                                AND CONS_COLUMS.TABLE_NAME = USER_CON.TABLE_NAME
+                                                                AND CONS_COLUMS.CONSTRAINT_NAME = USER_CON .CONSTRAINT_NAME
+                                                                AND USER_CON.CONSTRAINT_TYPE = 'P'
+                                                                AND USER_CON.STATUS = 'ENABLED'
+        ) PK_COLUMNS ON COL.TABLE_NAME = PK_COLUMNS.TABLE_NAME
+                    AND COL.COLUMN_NAME = PK_COLUMNS.COLUMN_NAME
+
+        WHERE COL.TABLE_NAME = #{tableName}
+
+        ORDER BY COL.COLUMN_ID
+    </select>
+
+</mapper>

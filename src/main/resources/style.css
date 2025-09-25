@@ -1,0 +1,180 @@
+/* style.css */
+
+/* ===== XML 구문 강조 ===== */
+.xml-tag-bracket {
+    -fx-fill: #808080; /* 회색 */
+}
+
+.xml-tag-name {
+    -fx-fill: #800080; /* 보라색 */
+    -fx-font-weight: bold;
+}
+
+.xml-attribute {
+    -fx-fill: #B8860B; /* Deep Blue */
+}
+
+.xml-value {
+    -fx-fill: #2E8B57; /* 녹색 */
+}
+
+.xml-comment {
+    -fx-fill: #008000; /* 진한 녹색 */
+    -fx-font-style: italic;
+}
+
+/* ===== SQL 구문 강조 ===== */
+.sql-keyword {
+    -fx-fill: #0000FF; /* 파란색 */
+    -fx-font-weight: bold;
+}
+
+.sql-string {
+    -fx-fill: #008000; /* 녹색 */
+}
+
+.sql-number {
+    -fx-fill: #FF6347; /* 빨간색 */
+}
+
+.sql-comment {
+    -fx-fill: #808080; /* 회색 */
+    -fx-font-style: italic;
+}
+
+/* ===== CodeArea 기본 설정 ===== */
+.code-area {
+    -fx-font-family: 'JetBrains Mono', 'D2Coding', 'Consolas', 'Monospaced';
+    -fx-font-size: 13px;
+    -fx-background-color: #fafafa;
+    -fx-text-fill: #2b2b2b;
+    -fx-border-color: #d0d0d0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.code-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.code-area .viewport {
+    -fx-background-color: #fafafa;
+}
+
+/* ===== 라인 넘버 영역 ===== */
+.lineno {
+    -fx-background-color: #f5f5f5;
+    -fx-text-fill: #999999;
+    -fx-font-family: 'JetBrains Mono', 'D2Coding', 'Consolas', 'Monospaced';
+    -fx-font-size: 12px;
+    -fx-padding: 0 5 0 5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 1 0 0;
+}
+
+/* ===== 전체 애플리케이션 폰트 ===== */
+.root {
+    -fx-font-family: "맑은 고딕", "Malgun Gothic", "Arial", sans-serif;
+    -fx-font-size: 12px;
+}
+
+/* ===== 버튼 스타일 ===== */
+.button {
+    -fx-font-family: "맑은 고딕";
+    -fx-font-size: 11px;
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 6 12 6 12;
+}
+
+.button:hover {
+    -fx-background-color: #e9ecef;
+    -fx-border-color: #adb5bd;
+}
+
+.button:pressed {
+    -fx-background-color: #dee2e6;
+}
+
+/* ===== 입력 필드 스타일 ===== */
+.text-field {
+    -fx-font-family: "맑은 고딕";
+    -fx-font-size: 12px;
+    -fx-background-color: white;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 6 12 6 12;
+}
+
+.text-field:focused {
+    -fx-border-color: #80bdff;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,123,255,.25), 0, 0, 0, 0);
+}
+
+/* ===== 체크박스와 라디오버튼 ===== */
+.check-box .text, .radio-button .text {
+    -fx-font-family: "맑은 고딕";
+    -fx-font-size: 11px;
+}
+
+/* ===== 라벨 스타일 ===== */
+.label {
+    -fx-font-family: "맑은 고딕";
+    -fx-font-size: 11px;
+}
+
+/* ===== 상태 라벨 특별 스타일 ===== */
+#statusLabel {
+    -fx-font-weight: bold;
+    -fx-text-fill: #28a745;
+}
+
+/* ===== 에러 상태 ===== */
+.status-error {
+    -fx-text-fill: #dc3545 !important;
+}
+
+/* ===== 성공 상태 ===== */
+.status-success {
+    -fx-text-fill: #28a745 !important;
+}
+
+/* ===== 경고 상태 ===== */
+.status-warning {
+    -fx-text-fill: #ffc107 !important;
+}
+
+/* ===== 어두운 테마 (선택사항) ===== */
+.dark-theme {
+    -fx-background-color: #2b2b2b;
+    -fx-text-fill: #ffffff;
+}
+
+.dark-theme .code-area {
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #d4d4d4;
+    -fx-border-color: #404040;
+}
+
+.dark-theme .xml-tag-bracket {
+    -fx-fill: #808080;
+}
+
+.dark-theme .xml-tag-name {
+    -fx-fill: #569cd6;
+    -fx-font-weight: bold;
+}
+
+.dark-theme .xml-attribute {
+    -fx-fill: #9cdcfe;
+}
+
+.dark-theme .xml-value {
+    -fx-fill: #ce9178;
+}

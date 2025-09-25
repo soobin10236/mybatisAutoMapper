@@ -1,0 +1,59 @@
+<!-- MainView.fxml -->
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<?import org.fxmisc.richtext.CodeArea?>
+<?import org.fxmisc.flowless.VirtualizedScrollPane?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.dev.mybatisautomapper.view.MainViewController">
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Table:"/>
+                <TextField fx:id="tableInput" promptText="테이블명 입력" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="testConnectionBtn" text="DB 연결 테스트" onAction="#onTestConnection"/>
+                <Button fx:id="fetchColumnsBtn" text="맵퍼 생성" onAction="#onFetchColumns"/>
+                <Button fx:id="copyToClipboardBtn" text="복사" onAction="#onCopyToClipboard"/>
+            </HBox>
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <VBox spacing="10">
+                <CheckBox fx:id="useIfInUpdateChk" text="UPDATE문에 &lt;if&gt; 구문 적용" selected="true"/>
+                <CheckBox fx:id="useIfInWhereChk" text="WHERE절에 &lt;if&gt; 구문 적용"/>
+                </VBox>
+                <Separator orientation="VERTICAL"/>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="파라미터 타입 (WHERE절):"/>
+                    <fx:define>
+                        <ToggleGroup fx:id="paramTypeGroup"/>
+                    </fx:define>
+                    <RadioButton fx:id="paramModelRadio" text="Model" toggleGroup="$paramTypeGroup" selected="true"/>
+                    <RadioButton fx:id="paramHashMapRadio" text="HashMap" toggleGroup="$paramTypeGroup"/>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="statusLabel"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+    <VBox spacing="8" BorderPane.alignment="CENTER">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+
+        <VirtualizedScrollPane vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+            <content>
+                <CodeArea fx:id="logOutputArea" editable="false" wrapText="false" />
+            </content>
+        </VirtualizedScrollPane>
+
+    </VBox>
+</center>
+
+</BorderPane>
