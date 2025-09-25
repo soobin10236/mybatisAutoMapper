@@ -11,6 +11,8 @@ import javafx.scene.input.ClipboardContent;
 import org.dev.mybatisautomapper.model.ColumnInfo;
 import org.dev.mybatisautomapper.service.AiService;
 import org.dev.mybatisautomapper.service.TableInfoService;
+import org.dev.mybatisautomapper.util.Config;
+import org.dev.mybatisautomapper.util.ConfigLoader;
 import org.dev.mybatisautomapper.util.MybatisMapperGenerator;
 
 import java.io.PrintWriter;
@@ -25,15 +27,38 @@ public class MainViewModel {
     public BooleanProperty useIfWhere = new SimpleBooleanProperty(false); // 기본값 false
     // true이면 Model, false이면 HashMap
     public BooleanProperty isParameterTypeModel = new SimpleBooleanProperty(true); // 기본값 true
+    private final BooleanProperty darkThemeEnabled = new SimpleBooleanProperty(false); // 기본값은 false (라이트 모드)
 
     private final TableInfoService tableInfoService;
     private final AiService aiService;
+    private Config config;
+    private String configPath;
 
     public MainViewModel(TableInfoService tableInfoService, AiService aiService) {
         this.tableInfoService = tableInfoService;
         this.aiService = aiService;
     }
 
+    public void init(Config config, String configPath) {
+        this.config = config;
+        this.configPath = configPath;
+
+        // 1. Config 객체에서 직접 테마 값 읽기
+        // config.ui가 null일 경우를 대비한 방어 코드 추가
+        if (config.getUi() == null) {
+            Config.Ui ui = new Config.Ui();
+            ui.theme = "light"; // 기본값
+
+            config.setUi(ui);
+        }
+        darkThemeEnabled.set("dark".equalsIgnoreCase(config.getUi().theme));
+
+        // 2. 테마가 변경되면 config 객체의 값을 바꾸고 ConfigLoader.save() 호출
+        darkThemeEnabled.addListener((obs, oldVal, newVal) -> {
+            config.getUi().theme = newVal ? "dark" : "light";
+            ConfigLoader.save(configPath);
+        });
+    }
 
     /**
      * DB 연결 테스트 버튼 이벤트 핸들러
@@ -122,7 +147,7 @@ public class MainViewModel {
                 generatedMapper = "\n" + selectStmt + "\n" +
                         "\n" + insertStmt + "\n" +
                         "\n" + updateStmt + "\n" +
-                        "\n" + deleteStmt;
+                        "\n" + deleteStmt + "\n" + "\n";
 
                 return generatedMapper;    // Task 결과로 컬럼 리스트 반환 (선택 사항)
             }
@@ -176,7 +201,15 @@ public class MainViewModel {
         } else {
             status.set("복사할 내용이 없습니다.");
         }
+    }
 
+    // 컨트롤러가 이 프로퍼티를 감시(observe)할 수 있도록 getter 제공
+    public BooleanProperty darkThemeEnabledProperty() {
+        return darkThemeEnabled;
+    }
+
+    public boolean isDarkThemeEnabled() {
+        return darkThemeEnabled.get();
     }
 
     // 테이블 이름을 모델 클래스 이름으로 변환 (예: ME_ITEMSERCHK_INFO_X20400 -> MeItemserchkInfoX20400)

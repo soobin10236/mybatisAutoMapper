@@ -30,6 +30,7 @@ public class SyntaxHighlighting {
         Matcher matcher = PATTERN.matcher(text);
         int lastKwEnd = 0;
         StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+        Collection<String> defaultStyle = Collections.singleton("default-text");
 
         while (matcher.find()) {
             // [수정] 각 그룹에 맞는 CSS 스타일 클래스를 지정
@@ -42,12 +43,12 @@ public class SyntaxHighlighting {
                     null; // null일 경우 없음
 
             if (styleClass != null) {
-                spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+                spansBuilder.add(defaultStyle, matcher.start() - lastKwEnd);
                 spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
                 lastKwEnd = matcher.end();
             }
         }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        spansBuilder.add(defaultStyle, text.length() - lastKwEnd);
         return spansBuilder.create();
     }
 }

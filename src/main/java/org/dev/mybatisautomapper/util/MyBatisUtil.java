@@ -25,10 +25,10 @@ public class MyBatisUtil {
                 // 1) JSON에서 설정 로드
                 Config cfg = ConfigLoader.load("config.json");
                 Properties props = new Properties();
-                props.setProperty("db.driver",   cfg.db.driver);
-                props.setProperty("db.url",      cfg.db.url);
-                props.setProperty("db.user",     cfg.db.user);
-                props.setProperty("db.password", cfg.db.password);
+                props.setProperty("db.driver",   cfg.getDb().driver);
+                props.setProperty("db.url",      cfg.getDb().url);
+                props.setProperty("db.user",     cfg.getDb().user);
+                props.setProperty("db.password", cfg.getDb().password);
 
                 // 2) MyBatis 빌드 시에 props 전달
                 factory = new SqlSessionFactoryBuilder().build(reader, props);

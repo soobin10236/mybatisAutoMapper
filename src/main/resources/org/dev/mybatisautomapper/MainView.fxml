@@ -7,7 +7,8 @@
 <?import org.fxmisc.flowless.VirtualizedScrollPane?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.dev.mybatisautomapper.view.MainViewController">
+            fx:controller="org.dev.mybatisautomapper.view.MainViewController"
+            fx:id="rootPane">
     <top>
         <VBox spacing="10">
             <padding>
@@ -22,18 +23,27 @@
             </HBox>
             <HBox spacing="15" alignment="CENTER_LEFT">
                 <VBox spacing="10">
-                <CheckBox fx:id="useIfInUpdateChk" text="UPDATE문에 &lt;if&gt; 구문 적용" selected="true"/>
-                <CheckBox fx:id="useIfInWhereChk" text="WHERE절에 &lt;if&gt; 구문 적용"/>
+                    <CheckBox fx:id="useIfInUpdateChk" text="UPDATE문에 &lt;if&gt; 구문 적용" selected="true"/>
+                    <CheckBox fx:id="useIfInWhereChk" text="WHERE절에 &lt;if&gt; 구문 적용"/>
                 </VBox>
                 <Separator orientation="VERTICAL"/>
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="파라미터 타입 (WHERE절):"/>
-                    <fx:define>
-                        <ToggleGroup fx:id="paramTypeGroup"/>
-                    </fx:define>
-                    <RadioButton fx:id="paramModelRadio" text="Model" toggleGroup="$paramTypeGroup" selected="true"/>
-                    <RadioButton fx:id="paramHashMapRadio" text="HashMap" toggleGroup="$paramTypeGroup"/>
-                </HBox>
+                <VBox spacing="10">
+                    <Label text="파라미터 타입 (WHERE절)"/>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <fx:define>
+                            <ToggleGroup fx:id="paramTypeGroup"/>
+                        </fx:define>
+                        <RadioButton fx:id="paramModelRadio" text="Model" toggleGroup="$paramTypeGroup"
+                                     selected="true"/>
+                        <RadioButton fx:id="paramHashMapRadio" text="HashMap" toggleGroup="$paramTypeGroup"/>
+                    </HBox>
+                </VBox>
+                <Separator orientation="VERTICAL"/>
+                <VBox spacing="10">
+                    <ToggleButton fx:id="themeToggleBtn" text="테마 변경"/>
+                    <Label fx:id="statusTheme"/>
+                </VBox>
+                <Separator orientation="VERTICAL"/>
 
                 <Region HBox.hgrow="ALWAYS"/>
                 <Label fx:id="statusLabel"/>
@@ -42,18 +52,18 @@
     </top>
 
     <center>
-    <VBox spacing="8" BorderPane.alignment="CENTER">
-        <padding>
-            <Insets top="10" right="10" bottom="10" left="10"/>
-        </padding>
+        <VBox spacing="8" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
 
-        <VirtualizedScrollPane vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-            <content>
-                <CodeArea fx:id="logOutputArea" editable="false" wrapText="false" />
-            </content>
-        </VirtualizedScrollPane>
+            <VirtualizedScrollPane vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+                <content>
+                    <CodeArea fx:id="logOutputArea" editable="false" wrapText="false"/>
+                </content>
+            </VirtualizedScrollPane>
 
-    </VBox>
-</center>
+        </VBox>
+    </center>
 
 </BorderPane>

@@ -178,3 +178,111 @@
 .dark-theme .xml-value {
     -fx-fill: #ce9178;
 }
+
+/* --- 전체 기본 배경 및 글자색 --- */
+.dark-theme {
+    -fx-base: #3c3e41; /* 컨트롤의 기본 색상 */
+    -fx-background: #3c3e41; /* 전체 배경 */
+    -fx-control-inner-background: #3c3e41; /* 컨트롤 내부 배경 */
+}
+
+.dark-theme .label {
+    -fx-text-fill: #a9b7c6; /* 밝은 회색 폰트 (핵심) */
+}
+
+/* --- 버튼 --- */
+.dark-theme .button {
+    -fx-background-color: #555a5f;
+    -fx-text-fill: #a9b7c6;
+    -fx-border-color: #4e5052;
+}
+.dark-theme .button:hover {
+    -fx-background-color: #64696e;
+}
+.dark-theme .button:pressed {
+    -fx-background-color: #70757a;
+}
+
+/* --- 텍스트 필드 --- */
+.dark-theme .text-field {
+    -fx-background-color: #45494a;
+    -fx-text-fill: #a9b7c6;
+    -fx-border-color: #555a5f;
+    -fx-prompt-text-fill: #808080;
+}
+.dark-theme .text-field:focused {
+    -fx-border-color: #2675bf;
+}
+
+/* --- 체크박스 & 라디오 버튼 (안보이던 문제 해결) --- */
+.dark-theme .check-box,
+.dark-theme .radio-button {
+    -fx-text-fill: #a9b7c6;
+}
+
+.dark-theme .check-box .box,
+.dark-theme .radio-button .radio {
+    -fx-background-color: #45494a;
+    -fx-border-color: transparent;
+}
+
+.dark-theme .check-box:selected .box .mark,
+.dark-theme .radio-button:selected .radio .dot {
+    -fx-background-color: #a9b7c6; /* 체크/선택 표시 색상 */
+}
+
+/* --- 구분선 --- */
+.dark-theme .separator .line {
+    -fx-border-color: #555a5f;
+    -fx-border-width: 1px;
+}
+
+/* --- 상태 라벨 --- */
+.dark-theme #statusLabel,
+.dark-theme #statusTheme { /* FXML에 추가하신 다른 라벨도 포함 */
+    -fx-text-fill: #a9b7c6;
+}
+.dark-theme .status-error {
+    -fx-text-fill: #ff6b68 !important; /* 더 밝은 빨강 */
+}
+.dark-theme .status-success {
+    -fx-text-fill: #52d68a !important; /* 더 밝은 초록 */
+}
+.dark-theme .status-warning {
+    -fx-text-fill: #f2c85b !important; /* 더 밝은 노랑 */
+}
+
+
+/* --- 다크 모드 토글 버튼 (선택 시 강조) --- */
+.dark-theme .toggle-button:selected {
+    -fx-background-color: #2675bf; /* 인텔리제이 파란색 */
+    -fx-text-fill: #ffffff;
+}
+
+/* --- CodeArea 다크 테마 --- */
+.dark-theme .code-area {
+    -fx-background-color: #2b2b2b;
+    -fx-border-color: #555a5f;
+}
+.dark-theme .code-area .lineno {
+    -fx-background-color: #313335;
+    -fx-text-fill: #606366;
+}
+.dark-theme .code-area .paragraph-text {
+    -fx-fill: #a9b7c6;
+}
+
+.dark-theme .default-text {
+    -fx-fill: #a9b7c6;
+}
+
+/* --- 구문 강조 다크 테마 --- */
+.dark-theme .xml-tag-bracket { -fx-fill: #a9b7c6; }
+.dark-theme .xml-tag-name { -fx-fill: #e8bf6a; -fx-font-weight: bold; }
+.dark-theme .xml-attribute { -fx-fill: #9876aa; }
+.dark-theme .xml-value { -fx-fill: #6a8759; }
+.dark-theme .xml-comment, .dark-theme .sql-comment { -fx-fill: #808080; -fx-font-style: italic; }
+
+.dark-theme .sql-keyword { -fx-fill: #cc7832; -fx-font-weight: bold; }
+.dark-theme .sql-string { -fx-fill: #6a8759; }
+.dark-theme .sql-number { -fx-fill: #6897bb; }

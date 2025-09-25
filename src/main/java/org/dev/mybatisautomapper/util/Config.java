@@ -19,6 +19,35 @@ public class Config {
         public Map<String, AiProvider> providers;
     }
 
-    public Db db;
-    public Ai ai;
+    public static class Ui {
+        public String theme;
+    }
+
+    private Db db;
+    private Ai ai;
+    private Ui ui;
+
+    public Db getDb() {
+        return db;
+    }
+
+    public void setDb(Db db) {
+        this.db = db;
+    }
+
+    public Ai getAi() {
+        return ai;
+    }
+
+    public void setAi(Ai ai) {
+        this.ai = ai;
+    }
+
+    public Ui getUi() {
+        return ui;
+    }
+
+    public void setUi(Ui ui) {
+        this.ui = ui;
+    }
 }
