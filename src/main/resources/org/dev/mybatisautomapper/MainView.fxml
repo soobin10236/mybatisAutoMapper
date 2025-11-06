@@ -28,7 +28,7 @@
                 </VBox>
                 <Separator orientation="VERTICAL"/>
                 <VBox spacing="10">
-                    <Label text="파라미터 타입 (WHERE절)"/>
+                    <Label text="파라미터 타입"/>
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <fx:define>
                             <ToggleGroup fx:id="paramTypeGroup"/>
@@ -39,14 +39,13 @@
                     </HBox>
                 </VBox>
                 <Separator orientation="VERTICAL"/>
-                <VBox spacing="10">
-                    <ToggleButton fx:id="themeToggleBtn" text="테마 변경"/>
-                    <Label fx:id="statusTheme"/>
+                <VBox spacing="10" alignment="CENTER" prefWidth="200">
+                    <Label fx:id="statusLabel" maxWidth="Infinity" alignment="CENTER"/>
                 </VBox>
                 <Separator orientation="VERTICAL"/>
 
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="statusLabel"/>
+                <ToggleButton fx:id="themeToggleBtn" text="테마 변경"/>
             </HBox>
         </VBox>
     </top>

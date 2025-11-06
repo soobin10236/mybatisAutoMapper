@@ -66,7 +66,15 @@ public class MybatisMapperGenerator {
 
             if(useIfWhere){
                 whereBuilder.append(INDENT);
-                whereBuilder.append("<if test=\"").append(finalParamName).append(" != null and ").append(finalParamName).append(" != ''\">\n");
+                String dataType = pkCol.getData_type();
+                // 데이터 타입이 문자열(VARCHAR, CHAR) 계열인지 확인
+                if (dataType.startsWith("VARCHAR") || dataType.startsWith("CHAR") || dataType.startsWith("NVARCHAR")) {
+                    // 문자열 타입일 경우: null 체크 AND 빈 문자열 체크
+                    whereBuilder.append("<if test=\"").append(finalParamName).append(" != null and ").append(finalParamName).append(" != ''\">\n");
+                } else {
+                    // NUMBER, DATE 등 그 외 모든 타입일 경우: null 체크만
+                    whereBuilder.append("<if test=\"").append(finalParamName).append(" != null\">\n");
+                }
             }
             whereBuilder.append(INDENT);
             whereBuilder.append("AND ").append(columnNameFormatted).append("= #{").append(finalParamName).append("}\n");
@@ -79,8 +87,9 @@ public class MybatisMapperGenerator {
 
         // --- 최종 쿼리 조립 ---
         // <select> 태그를 사용하고, id와 resultType을 설정
-        sqlBuilder.append("    <select id=\"select").append(convertToCamelCase(tableName))
-                  .append("\" parameterType=\"TBD\" resultType=\"").append("TBD").append("\">\n");
+        String parameterType = isParameterTypeModel ? "Model" : "HashMap";
+        sqlBuilder.append("    <select id=\"select")
+                  .append("\" parameterType=\"").append(parameterType).append("\" resultType=\"").append("Model").append("\">\n");
         sqlBuilder.append("        \n");
         sqlBuilder.append(selectClauseBuilder); // SELECT 절 추가
         sqlBuilder.append(INDENT).append("  FROM ").append(tableName).append("\n");
@@ -97,7 +106,7 @@ public class MybatisMapperGenerator {
      * @param columns 테이블 컬럼 정보 리스트
      * @return 생성된 INSERT XML 구문
      */
-    public static String generateInsertStatement(String tableName, List<ColumnInfo> columns) {
+    public static String generateInsertStatement(String tableName, List<ColumnInfo> columns, boolean isParameterTypeModel) {
         StringBuilder sqlBuilder = new StringBuilder();
         List<String> columnNames = new ArrayList<>();
         List<String> bindVariables = new ArrayList<>();
@@ -116,7 +125,15 @@ public class MybatisMapperGenerator {
 
             columnNames.add(columnName);
 
-            String paramName = lowerCaseSnakeCase(col.getColumn_name()); // 컬럼명 소문자로 변환
+            String paramName; // 컬럼명 소문자로 변환
+            if (isParameterTypeModel) {
+                // Model 스타일 (기본값): #{소문자컬럼명}
+                paramName = lowerCaseSnakeCase(columnName);
+            } else {
+                // HashMap 스타일: #{P_대문자컬럼명}
+                paramName = "P_" + columnName;
+            }
+
             String bindVar;
 
             if (col.getColumn_name().endsWith("INSERT_DTS")) {
@@ -137,8 +154,11 @@ public class MybatisMapperGenerator {
         String formattedColumns = simplifiedFormatLineByLine(columnNames, COLUMNS_PER_LINE, ",", DEFAULT_PADDING);
         String formattedValues = simplifiedFormatLineByLine(bindVariables, COLUMNS_PER_LINE, ",", DEFAULT_PADDING);
 
+        String parameterType = isParameterTypeModel ? "Model" : "HashMap";
+
         sqlBuilder.append("    \n");
-        sqlBuilder.append("    <insert id=\"insert").append(convertToCamelCase(tableName)).append("\" parameterType=\"").append("TBD").append("\">\n");
+        sqlBuilder.append("    <insert id=\"insert")
+                  .append("\" parameterType=\"").append(parameterType).append("\">\n");
         sqlBuilder.append("        \n");
         sqlBuilder.append("        INSERT INTO ").append(tableName).append("\n");
         sqlBuilder.append("        ( ").append("\n");
@@ -185,7 +205,16 @@ public class MybatisMapperGenerator {
         setBuilder.append(INDENT).append("<set>\n");
 
         for (ColumnInfo col : updateableColumns) {
-            String paramName = lowerCaseSnakeCase(col.getColumn_name());
+            String paramName; // 컬럼명 소문자로 변환
+            if (isParameterTypeModel) {
+                // Model 스타일 (기본값): #{소문자컬럼명}
+                paramName = lowerCaseSnakeCase(col.getColumn_name());
+            } else {
+                // HashMap 스타일: #{P_대문자컬럼명}
+                paramName = "P_" + col.getColumn_name();
+            }
+
+
             String columnNameFormatted = String.format("%-" + 20 + "s", col.getColumn_name());
 
             String columnName = col.getColumn_name();
@@ -199,7 +228,15 @@ public class MybatisMapperGenerator {
             // <if> 태그로 각 일반 컬럼을 감싸줍니다.
             setBuilder.append(INDENT);
             if(useIfUpadate){
-                setBuilder.append("<if test=\"").append(paramName).append(" != null and ").append(paramName).append(" != ''\"> ");
+                String dataType = col.getData_type();
+                // 데이터 타입이 문자열(VARCHAR, CHAR) 계열인지 확인
+                if (dataType.startsWith("VARCHAR") || dataType.startsWith("CHAR") || dataType.startsWith("NVARCHAR")) {
+                    // 문자열 타입일 경우: null 체크 AND 빈 문자열 체크
+                    setBuilder.append("<if test=\"").append(paramName).append(" != null and ").append(paramName).append(" != ''\">");
+                } else {
+                    // NUMBER, DATE 등 그 외 모든 타입일 경우: null 체크만
+                    setBuilder.append("<if test=\"").append(paramName).append(" != null\">");
+                }
             }
             setBuilder.append(columnNameFormatted).append("= #{").append(paramName).append("},");
             if(useIfUpadate){
@@ -233,7 +270,15 @@ public class MybatisMapperGenerator {
 
             if(useIfWhere){
                 whereBuilder.append(INDENT);
-                whereBuilder.append("<if test=\"").append(finalParamName).append(" != null and ").append(finalParamName).append(" != ''\">\n");
+                String dataType = pkCol.getData_type();
+                // 데이터 타입이 문자열(VARCHAR, CHAR) 계열인지 확인
+                if (dataType.startsWith("VARCHAR") || dataType.startsWith("CHAR") || dataType.startsWith("NVARCHAR")) {
+                    // 문자열 타입일 경우: null 체크 AND 빈 문자열 체크
+                    whereBuilder.append("<if test=\"").append(finalParamName).append(" != null and ").append(finalParamName).append(" != ''\">\n");
+                } else {
+                    // NUMBER, DATE 등 그 외 모든 타입일 경우: null 체크만
+                    whereBuilder.append("<if test=\"").append(finalParamName).append(" != null\">\n");
+                }
             }
             whereBuilder.append(INDENT);
             whereBuilder.append("AND ").append(columnNameFormatted).append("= #{").append(finalParamName).append("}\n");
@@ -244,8 +289,11 @@ public class MybatisMapperGenerator {
         }
         whereBuilder.append(INDENT).append("</where>\n");
 
+        String parameterType = isParameterTypeModel ? "Model" : "HashMap";
+
         sqlBuilder.append("\n    \n");
-        sqlBuilder.append("    <update id=\"update").append(convertToCamelCase(tableName)).append("\" parameterType=\"").append("TBD").append("\">\n");
+        sqlBuilder.append("    <update id=\"update")
+                  .append("\" parameterType=\"").append(parameterType).append("\">\n");
         sqlBuilder.append("        \n");
         sqlBuilder.append("        UPDATE ").append(tableName).append("\n");
         sqlBuilder.append("        \n");
@@ -290,7 +338,16 @@ public class MybatisMapperGenerator {
 
             if(useIfWhere){
                 whereBuilder.append(INDENT);
-                whereBuilder.append("<if test=\"").append(finalParamName).append(" != null and ").append(finalParamName).append(" != ''\">\n");
+
+                String dataType = pkCol.getData_type();
+                // 데이터 타입이 문자열(VARCHAR, CHAR) 계열인지 확인
+                if (dataType.startsWith("VARCHAR") || dataType.startsWith("CHAR") || dataType.startsWith("NVARCHAR")) {
+                    // 문자열 타입일 경우: null 체크 AND 빈 문자열 체크
+                    whereBuilder.append("<if test=\"").append(finalParamName).append(" != null and ").append(finalParamName).append(" != ''\">\n");
+                } else {
+                    // NUMBER, DATE 등 그 외 모든 타입일 경우: null 체크만
+                    whereBuilder.append("<if test=\"").append(finalParamName).append(" != null\">\n");
+                }
             }
             whereBuilder.append(INDENT);
             whereBuilder.append("AND ").append(columnNameFormatted).append("= #{").append(finalParamName).append("}\n");
@@ -301,8 +358,10 @@ public class MybatisMapperGenerator {
         }
         whereBuilder.append(INDENT).append("</where>\n");
 
+        String parameterType = isParameterTypeModel ? "Model" : "HashMap";
         sqlBuilder.append("\n    \n");
-        sqlBuilder.append("    <delete id=\"delete").append(convertToCamelCase(tableName)).append("\" parameterType=\"").append("TBD").append("\">\n");
+        sqlBuilder.append("    <delete id=\"delete")
+                  .append("\" parameterType=\"").append(parameterType).append("\">\n");
         sqlBuilder.append("        \n");
         sqlBuilder.append("        DELETE FROM ").append(tableName).append("\n");
         sqlBuilder.append(whereBuilder);

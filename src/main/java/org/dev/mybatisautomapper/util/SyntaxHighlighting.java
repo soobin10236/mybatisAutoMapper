@@ -15,8 +15,8 @@ public class SyntaxHighlighting {
             "(?<COMMENT>``|--[^\n]*)"                                     // 주석
           + "|(?<TAGBRACKET></?|>)"                                      // 태그 괄호: <, </, >
           + "|(?<TAGNAME>(?<=</?)\\w[\\w-]*)"                                    // 태그 이름
-          + "|(?<ATTRIBUTE>\\w[\\w-]*)(?=\\s*=\\s*\")"                         // 속성 이름
-          + "|(?<VALUE>\"[^\"]*\")"                                      // 속성 값
+          + "|(?<ATTRIBUTE>\\w[\\w-]*)(?=\\s*=\\s*(\"|\'))"                         // 속성 이름
+          + "|(?<VALUE>\"[^\"]*\"|\'[^\']*\')"                                     // 속성 값
     );
 
     public static void apply(CodeArea codeArea) {

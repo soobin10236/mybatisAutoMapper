@@ -138,7 +138,7 @@ public class MainViewModel {
                 String generatedMapper = "";
                 String modelName = convertToModelName(currentTableName); // 테이블명 기반 모델명 유추
                 String selectStmt = MybatisMapperGenerator.generateSelectStatement(currentTableName, cols, currentUseIfWhere, currentIsParameterTypeModel);
-                String insertStmt = MybatisMapperGenerator.generateInsertStatement(currentTableName, cols);
+                String insertStmt = MybatisMapperGenerator.generateInsertStatement(currentTableName, cols, currentIsParameterTypeModel);
                 String updateStmt = MybatisMapperGenerator.generateUpdateStatement(currentTableName, cols, currentUseIfUpdate, currentUseIfWhere, currentIsParameterTypeModel);
                 String deleteStmt = MybatisMapperGenerator.generateDeleteStatement(currentTableName, cols, currentUseIfWhere, currentIsParameterTypeModel);
 
