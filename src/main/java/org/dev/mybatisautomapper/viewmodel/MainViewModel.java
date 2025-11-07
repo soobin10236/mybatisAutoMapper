@@ -91,7 +91,7 @@ public class MainViewModel {
                 e.printStackTrace(new PrintWriter(sw));
                 String exceptionAsString = sw.toString();
 
-                updateMessage("DB 연결 테스트 중 예외 발생: " + e.getMessage());
+                updateMessage("DB 연결 테스트 중 예외 발생..");
                 logOutput.set("DB 연결 테스트 중 예외 발생:\n" + exceptionAsString); // <-- 여기에 스택 트레이스 전체를 기록
             }
 

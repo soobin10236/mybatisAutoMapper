@@ -15,6 +15,8 @@ import org.dev.mybatisautomapper.util.SyntaxHighlighting;
 import org.dev.mybatisautomapper.viewmodel.MainViewModel;
 import org.fxmisc.richtext.CodeArea;
 
+import java.util.function.UnaryOperator;
+
 
 public class MainViewController {
     @FXML
@@ -64,6 +66,16 @@ public class MainViewController {
         vm.init(cfg, configPath);
 
         // 4) View ↔ ViewModel 바인딩
+
+        //테이블명은 대문자로 포맷팅
+        UnaryOperator<TextFormatter.Change> upperCaseFilter = change -> {
+            change.setText(change.getText().toUpperCase());
+            return change;
+        };
+
+        TextFormatter<String> upperCaseFormatter = new TextFormatter<>(upperCaseFilter);
+        tableInput.setTextFormatter(upperCaseFormatter);
+
         tableInput.textProperty().bindBidirectional(vm.tableName);
         statusLabel.textProperty().bind(vm.status);
         vm.logOutput.addListener((obs, oldText, newText) -> {

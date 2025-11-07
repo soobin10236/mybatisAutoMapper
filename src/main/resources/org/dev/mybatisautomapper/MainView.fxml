@@ -1,51 +1,50 @@
-<!-- MainView.fxml -->
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.geometry.Insets?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<?import org.fxmisc.richtext.CodeArea?>
-<?import org.fxmisc.flowless.VirtualizedScrollPane?>
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.dev.mybatisautomapper.view.MainViewController"
-            fx:id="rootPane">
+<!-- MainView.fxml -->
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.fxmisc.flowless.*?>
+<?import org.fxmisc.richtext.*?>
+
+<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.dev.mybatisautomapper.view.MainViewController">
     <top>
         <VBox spacing="10">
             <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
+                <Insets bottom="10" left="10" right="10" top="10" />
             </padding>
-            <HBox spacing="8" alignment="CENTER_LEFT">
-                <Label text="Table:"/>
-                <TextField fx:id="tableInput" promptText="테이블명 입력" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="testConnectionBtn" text="DB 연결 테스트" onAction="#onTestConnection"/>
-                <Button fx:id="fetchColumnsBtn" text="맵퍼 생성" onAction="#onFetchColumns"/>
-                <Button fx:id="copyToClipboardBtn" text="복사" onAction="#onCopyToClipboard"/>
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="Table:" />
+                <TextField fx:id="tableInput" promptText="테이블명 입력" HBox.hgrow="ALWAYS" />
+                <Button fx:id="testConnectionBtn" onAction="#onTestConnection" text="DB 연결 테스트" />
+                <Button fx:id="fetchColumnsBtn" onAction="#onFetchColumns" text="맵퍼 생성" />
+                <Button fx:id="copyToClipboardBtn" onAction="#onCopyToClipboard" text="복사" />
             </HBox>
-            <HBox spacing="15" alignment="CENTER_LEFT">
+            <HBox alignment="CENTER_LEFT" spacing="15">
                 <VBox spacing="10">
-                    <CheckBox fx:id="useIfInUpdateChk" text="UPDATE문에 &lt;if&gt; 구문 적용" selected="true"/>
-                    <CheckBox fx:id="useIfInWhereChk" text="WHERE절에 &lt;if&gt; 구문 적용"/>
+                    <CheckBox fx:id="useIfInUpdateChk" selected="true" text="UPDATE문에 &lt;if&gt; 구문 적용" />
+                    <CheckBox fx:id="useIfInWhereChk" text="WHERE절에 &lt;if&gt; 구문 적용" />
                 </VBox>
-                <Separator orientation="VERTICAL"/>
+                <Separator orientation="VERTICAL" />
                 <VBox spacing="10">
-                    <Label text="파라미터 타입"/>
+                    <Label text="파라미터 타입" />
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <fx:define>
-                            <ToggleGroup fx:id="paramTypeGroup"/>
+                            <ToggleGroup fx:id="paramTypeGroup" />
                         </fx:define>
-                        <RadioButton fx:id="paramModelRadio" text="Model" toggleGroup="$paramTypeGroup"
-                                     selected="true"/>
-                        <RadioButton fx:id="paramHashMapRadio" text="HashMap" toggleGroup="$paramTypeGroup"/>
+                        <RadioButton fx:id="paramModelRadio" selected="true" text="Model"/>
+                        <RadioButton fx:id="paramHashMapRadio" text="HashMap" toggleGroup="$paramTypeGroup" />
                     </HBox>
                 </VBox>
-                <Separator orientation="VERTICAL"/>
-                <VBox spacing="10" alignment="CENTER" prefWidth="200">
-                    <Label fx:id="statusLabel" maxWidth="Infinity" alignment="CENTER"/>
+                <Separator orientation="VERTICAL" />
+                <VBox alignment="CENTER" prefWidth="200" spacing="10">
+                    <Label fx:id="statusLabel" alignment="CENTER" maxWidth="Infinity" />
                 </VBox>
-                <Separator orientation="VERTICAL"/>
+                <Separator orientation="VERTICAL" />
 
-                <Region HBox.hgrow="ALWAYS"/>
-                <ToggleButton fx:id="themeToggleBtn" text="테마 변경"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <ToggleButton fx:id="themeToggleBtn" text="테마 변경" />
             </HBox>
         </VBox>
     </top>
@@ -53,16 +52,24 @@
     <center>
         <VBox spacing="8" BorderPane.alignment="CENTER">
             <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
+                <Insets bottom="10" left="10" right="10" top="10" />
             </padding>
 
             <VirtualizedScrollPane vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                 <content>
-                    <CodeArea fx:id="logOutputArea" editable="false" wrapText="false"/>
+                    <CodeArea fx:id="logOutputArea" editable="false" wrapText="false" />
                 </content>
             </VirtualizedScrollPane>
 
         </VBox>
     </center>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="10">
+            <padding>
+                <Insets top="5" right="10" bottom="5" left="10"/>
+            </padding>
+            <Label text="v1.0.1" style="-fx-font-size: 15px;"/>
+        </HBox>
+   </bottom>
 
 </BorderPane>
