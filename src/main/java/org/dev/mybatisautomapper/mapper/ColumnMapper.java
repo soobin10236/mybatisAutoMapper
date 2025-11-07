@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ColumnMapper {
     List<ColumnInfo> selectColumns(String tableName);
+
+    List<String> selectAllTableNames();
 }

@@ -10,6 +10,16 @@
     </Appenders>
 
     <Loggers>
+        <Logger name="log4jdbc.log4j2" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
+             <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="jdbc.resultsettable" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
         <Root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>

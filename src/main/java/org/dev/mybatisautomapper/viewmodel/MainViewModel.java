@@ -5,6 +5,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -29,11 +31,33 @@ public class MainViewModel {
     public BooleanProperty isParameterTypeModel = new SimpleBooleanProperty(true); // 기본값 true
     private final BooleanProperty darkThemeEnabled = new SimpleBooleanProperty(false); // 기본값은 false (라이트 모드)
 
-    private final TableInfoService tableInfoService;
-    private final AiService aiService;
+    private TableInfoService tableInfoService = new TableInfoService();
+    public final ObservableList<String> cachedTableNames = FXCollections.observableArrayList();   //자동완성을 위한 테이블명 캐시 리스트
+    private AiService aiService;
     private Config config;
     private String configPath;
 
+    // Task가 반환할 결과 객체를 위한 간단한 내부 클래스
+    public static class ConnectionResult {
+        private final String connectionInfo;
+        private final List<String> tableNames;
+
+        public ConnectionResult(String connectionInfo, List<String> tableNames) {
+            this.connectionInfo = connectionInfo;
+            this.tableNames = tableNames;
+        }
+
+        public String getConnectionInfo() {
+            return connectionInfo;
+        }
+
+        public List<String> getTableNames() {
+            return tableNames;
+        }
+    }
+    
+    
+    //생성자
     public MainViewModel(TableInfoService tableInfoService, AiService aiService) {
         this.tableInfoService = tableInfoService;
         this.aiService = aiService;
@@ -64,35 +88,50 @@ public class MainViewModel {
      * DB 연결 테스트 버튼 이벤트 핸들러
      */
     public void onTestConnection() {
-        Task<Boolean> task = new Task<>() {
+        Task<ConnectionResult> task = new Task<>() {
             @Override
-            protected Boolean call() throws Exception {
+            protected ConnectionResult call() throws Exception {
                 updateMessage("DB 연결 테스트 중...");
-                return tableInfoService.checkDbConnection();
+                // 1. 연결 테스트 및 정보 가져오기
+                String info = tableInfoService.checkDbConnection();
+
+                updateMessage("테이블 목록 조회 중...");
+                // 2. 테이블 목록 전체 조회
+                List<String> tables = tableInfoService.getAllTableNames();
+
+                // 3. 두 가지 결과를 함께 반환
+                return new ConnectionResult(info, tables);
             }
 
             @Override
             protected void succeeded() {
-                // UI 업데이트는 Platform.runLater 내부에서만
-                if (getValue()) { // Task의 결과값 (boolean)
-                    updateMessage("DB 연결 성공!");
-                    logOutput.set("데이터베이스 연결에 성공했습니다."); // 성공 메시지도 로그에
-                } else {
-                    updateMessage("DB 연결 실패! 설정 확인 필요.");
-                    logOutput.set("데이터베이스 연결에 실패했습니다. 설정(config.json)을 확인하거나 방화벽, 서버 상태를 점검해주세요."); // 실패 메시지도 로그에
-                }
+                ConnectionResult result = getValue(); // ConnectionResult 객체를 받음
+
+                updateMessage("DB 연결 성공!");
+                logOutput.set(result.getConnectionInfo()); // 로그에 연결 정보 출력
+
+                // VM의 캐시 리스트에 테이블 목록을 저장
+                cachedTableNames.setAll(result.getTableNames());
             }
 
             @Override
             protected void failed() {
-                // Task에서 예외 발생 시 (예: MyBatisUtil.testConnection()에서 RuntimeException 발생 시)
                 Throwable e = getException();
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                String exceptionAsString = sw.toString();
 
-                updateMessage("DB 연결 테스트 중 예외 발생..");
-                logOutput.set("DB 연결 테스트 중 예외 발생:\n" + exceptionAsString); // <-- 여기에 스택 트레이스 전체를 기록
+                // Task에서 예외 발생 시 (예: MyBatisUtil.testConnection()에서 RuntimeException 발생 시)
+                // 사용자에게 필요한 핵심 원인 메시지를 보여줍니다.
+                Throwable rootCause = e;
+                while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+                    rootCause = rootCause.getCause();
+                }
+                // "Mybatis Auto Mapper는 Oracle DB 전용입니다." 또는 "No suitable driver" 등
+                String errorMessage = rootCause.getMessage();
+
+                updateMessage("DB 연결 실패!");
+                logOutput.set("DB 연결 테스트 중 예외 발생:\n" + errorMessage);
+
+                // 실패 시 캐시 비우기
+                cachedTableNames.clear();
             }
 
             @Override

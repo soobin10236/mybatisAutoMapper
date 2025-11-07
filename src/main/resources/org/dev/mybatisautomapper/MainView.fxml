@@ -33,7 +33,7 @@
                         <fx:define>
                             <ToggleGroup fx:id="paramTypeGroup" />
                         </fx:define>
-                        <RadioButton fx:id="paramModelRadio" selected="true" text="Model"/>
+                        <RadioButton fx:id="paramModelRadio" selected="true" text="Model" toggleGroup="$paramTypeGroup"/>
                         <RadioButton fx:id="paramHashMapRadio" text="HashMap" toggleGroup="$paramTypeGroup" />
                     </HBox>
                 </VBox>
@@ -69,7 +69,7 @@
                 <Insets top="5" right="10" bottom="5" left="10"/>
             </padding>
             <Label text="v1.0.1" style="-fx-font-size: 15px;"/>
-        </HBox>
+      </HBox>
    </bottom>
 
 </BorderPane>

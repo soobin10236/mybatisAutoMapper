@@ -104,21 +104,32 @@ public class MyBatisUtil {
      *
      * @return 연결 유효 시 true, 아닐 시 false
      */
-    public static boolean testConnection() {
+    public static String testConnection() throws Exception {
         try (SqlSession session = MyBatisUtil.getFactory().openSession()) {
             logger.info("session 연결 시작 : {}", session);
             Connection conn = session.getConnection();
-            boolean valid = conn.isValid(2);
-            logger.info("[DB] Connection valid: {}", valid);
-            return valid;
-        } catch (Exception e) {
-            // getFactory()가 의도적으로 발생시킨 RuntimeException인지 확인합니다.
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException)e; // 예외를 다시 던져서 Task의 failed()가 받도록 함
-            }
 
-            logger.error("[DB] Connection test failed", e);
-            return false;
+            // 메타데이터 가져오기(이 과정 자체가 연결 테스트임)
+            DatabaseMetaData metaData = conn.getMetaData();
+
+            // 상세 정보 문자열을 생성하여 반환합니다.
+            String successInfo = String.format(
+                "데이터베이스 연결에 성공했습니다.\n\n" +
+                "DB 유형  : %s\n" +
+                "DB 버전 : %s\n" +
+                "연결 URL : %s\n" +
+                "사용자    : %s",
+                metaData.getDatabaseProductName(),
+                metaData.getDatabaseProductVersion(),
+                metaData.getURL(),
+                metaData.getUserName()
+            );
+
+            logger.info("[DB] Connection Succeeded: {}", metaData.getURL());
+            return successInfo;
+        } catch (Exception e) {
+           logger.error("[DB] Connection test failed", e);
+            throw e;
         }
     }
 }

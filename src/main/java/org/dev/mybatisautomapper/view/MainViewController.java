@@ -1,11 +1,15 @@
 package org.dev.mybatisautomapper.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
+import javafx.util.Callback;
 import javafx.util.Duration;
+import org.controlsfx.control.textfield.TextFields;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.dev.mybatisautomapper.service.AiService;
 import org.dev.mybatisautomapper.service.AiServiceFactory;
 import org.dev.mybatisautomapper.service.TableInfoService;
@@ -15,7 +19,9 @@ import org.dev.mybatisautomapper.util.SyntaxHighlighting;
 import org.dev.mybatisautomapper.viewmodel.MainViewModel;
 import org.fxmisc.richtext.CodeArea;
 
+import java.util.Collection;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 
 public class MainViewController {
@@ -67,16 +73,51 @@ public class MainViewController {
 
         // 4) View ↔ ViewModel 바인딩
 
-        //테이블명은 대문자로 포맷팅
-        UnaryOperator<TextFormatter.Change> upperCaseFilter = change -> {
+        //테이블명은 대문자로 포맷팅 + 자동완성
+        /*UnaryOperator<TextFormatter.Change> upperCaseFilter = change -> {
             change.setText(change.getText().toUpperCase());
             return change;
         };
 
         TextFormatter<String> upperCaseFormatter = new TextFormatter<>(upperCaseFilter);
-        tableInput.setTextFormatter(upperCaseFormatter);
-
+        tableInput.setTextFormatter(upperCaseFormatter);*/
         tableInput.textProperty().bindBidirectional(vm.tableName);
+        // 자동완성 기능 바인딩
+
+        // 1. 자동완성 제안 규칙(Callback)을 정의합니다.
+        Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> suggestionProvider = request -> {
+            // 사용자가 입력한 텍스트를 가져와서 대문자로 변환
+            String userInput = request.getUserText().toUpperCase();
+
+            // 16,000개의 캐시된 테이블 목록(vm.cachedTableNames)에서
+            // 대문자 입력값(userInput)으로 "시작하는(startsWith)" 항목만 필터링
+            return vm.cachedTableNames.stream()
+                    .filter(tableName -> tableName.startsWith(userInput))
+                    .collect(Collectors.toList());
+        };
+
+        // 2. 자동완성 기능을 바인딩할 때, 위에서 만든 커스텀 제안 규칙(suggestionProvider)을 전달합니다.
+        TextFields.bindAutoCompletion(tableInput, suggestionProvider);
+
+        // 3. (선택 사항) 사용자가 'hr_'를 입력하면 자동으로 'HR_'로 변환되도록 리스너를 다시 추가합니다.
+        //    (자동완성 팝업 자체는 대소문자를 구분하지 않지만, UI 일관성을 위해)
+        tableInput.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.equals(newVal.toUpperCase())) {
+                Platform.runLater(() -> {
+                    int caretPos = tableInput.getCaretPosition();
+                    // ViewModel의 값을 변경하면 bindBidirectional을 통해 TextField도 변경됨
+                    vm.tableName.set(newVal.toUpperCase());
+                    tableInput.positionCaret(caretPos);
+                });
+            }
+        });
+
+        // 앱 시작 시 자동으로 테이블 목록을 로드하도록 VM에 요청합니다.
+         vm.onTestConnection();
+
+        //테이블명 세팅 끝
+
+
         statusLabel.textProperty().bind(vm.status);
         vm.logOutput.addListener((obs, oldText, newText) -> {
             logOutputArea.replaceText(newText);
@@ -85,6 +126,7 @@ public class MainViewController {
 
         useIfInUpdateChk.selectedProperty().bindBidirectional(vm.useIfUpdate);
         useIfInWhereChk.selectedProperty().bindBidirectional(vm.useIfWhere);
+
         // ToggleGroup의 선택된 토글이 변경될 때마다 ViewModel의 isParameterTypeModel 속성을 업데이트합니다.
         paramTypeGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             // 새로 선택된 토글(newToggle)이 paramModelRadio와 같으면 true, 아니면 false를 설정합니다.

@@ -11,7 +11,8 @@ module org.dev.mybatisautomapper {
     requires org.mybatis;   // Mybatis 라이브러리가 모듈이라면 (모듈화 되어있다면)
     requires org.apache.logging.log4j; // Log4j가 모듈이라면
     requires org.apache.logging.log4j.core;
-    requires org.fxmisc.richtext; // Log4j Core 모듈
+    requires org.fxmisc.richtext;
+    requires org.controlsfx.controls;
 
     //opens <패키지>: 해당 패키지를 “완전 리플렉션”에 개방
     //런타임에 리플렉션으로 모든 멤버(클래스·필드·메서드)에 접근할 수 있게 함.

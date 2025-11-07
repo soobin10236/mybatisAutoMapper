@@ -46,4 +46,10 @@
         ORDER BY COL.COLUMN_ID
     </select>
 
+    <select id="selectAllTableNames" resultType="String">
+        SELECT TABLE_NAME
+        FROM USER_TABLES
+        ORDER BY TABLE_NAME
+    </select>
+
 </mapper>

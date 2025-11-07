@@ -21,9 +21,10 @@ public class TableInfoService {
 
     /**
      * DB 연결 테스트를 MyBatisUtil로 위임
-     * @return 연결 유효 시 true, 아닐 시 false
+     * @return 연결 성공 정보 String, 실패 시 예외 발생
      */
-    public boolean checkDbConnection() { // testConnection()에서 이름 변경 (MyBatisUtil의 testConnection과 혼동 방지)
+    public String checkDbConnection() throws Exception { // testConnection()에서 이름 변경 (MyBatisUtil의 testConnection과 혼동 방지)
+
         return MyBatisUtil.testConnection(); // MyBatisUtil의 testConnection() 호출
     }
 
@@ -35,5 +36,13 @@ public class TableInfoService {
 
         logger.debug("[DB] Fetched {} columns for table {}", columns.size(), tableName);
         return columns;
+    }
+
+    /**
+     * DB에서 모든 테이블 이름 목록을 가져옵니다.
+     * @return 테이블 이름 리스트
+     */
+    public List<String> getAllTableNames() throws Exception {
+        return columnDao.selectAllTableNames();
     }
 }
