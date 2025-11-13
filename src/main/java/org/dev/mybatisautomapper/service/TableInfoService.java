@@ -42,7 +42,7 @@ public class TableInfoService {
      * DB에서 모든 테이블 이름 목록을 가져옵니다.
      * @return 테이블 이름 리스트
      */
-    public List<String> getAllTableNames() throws Exception {
+    public List<ColumnInfo> getAllTableNames() throws Exception {
         return columnDao.selectAllTableNames();
     }
 }

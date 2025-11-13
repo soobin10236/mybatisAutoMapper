@@ -32,7 +32,7 @@ public class MainViewModel {
     private final BooleanProperty darkThemeEnabled = new SimpleBooleanProperty(false); // 기본값은 false (라이트 모드)
 
     private TableInfoService tableInfoService = new TableInfoService();
-    public final ObservableList<String> cachedTableNames = FXCollections.observableArrayList();   //자동완성을 위한 테이블명 캐시 리스트
+    public final ObservableList<ColumnInfo> cachedTableNames = FXCollections.observableArrayList();   //자동완성을 위한 테이블명 캐시 리스트
     private AiService aiService;
     private Config config;
     private String configPath;
@@ -40,9 +40,9 @@ public class MainViewModel {
     // Task가 반환할 결과 객체를 위한 간단한 내부 클래스
     public static class ConnectionResult {
         private final String connectionInfo;
-        private final List<String> tableNames;
+        private final List<ColumnInfo> tableNames;
 
-        public ConnectionResult(String connectionInfo, List<String> tableNames) {
+        public ConnectionResult(String connectionInfo, List<ColumnInfo> tableNames) {
             this.connectionInfo = connectionInfo;
             this.tableNames = tableNames;
         }
@@ -51,7 +51,7 @@ public class MainViewModel {
             return connectionInfo;
         }
 
-        public List<String> getTableNames() {
+        public List<ColumnInfo> getTableNames() {
             return tableNames;
         }
     }
@@ -97,7 +97,7 @@ public class MainViewModel {
 
                 updateMessage("테이블 목록 조회 중...");
                 // 2. 테이블 목록 전체 조회
-                List<String> tables = tableInfoService.getAllTableNames();
+                List<ColumnInfo> tables = tableInfoService.getAllTableNames();
 
                 // 3. 두 가지 결과를 함께 반환
                 return new ConnectionResult(info, tables);

@@ -21,7 +21,7 @@ public class ColumnDao {
      * 현재 스키마의 모든 테이블 목록을 조회합니다.
      * @return 테이블 이름 리스트
      */
-    public List<String> selectAllTableNames() {
+    public List<ColumnInfo> selectAllTableNames() {
         try (SqlSession session = MyBatisUtil.getFactory().openSession()) {
             // "namespace.id" 형식으로 호출 (namespace는 실제 파일에 맞게 수정)
             return session.getMapper(ColumnMapper.class).selectAllTableNames();

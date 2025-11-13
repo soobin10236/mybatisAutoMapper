@@ -58,13 +58,9 @@ public class ColumnInfo {
 
     @Override
     public String toString() {
-        return "ColumnInfo{" +
-                "table_nm='" + table_nm + '\'' +
-                ", table_comments='" + table_comments + '\'' +
-                ", column_name='" + column_name + '\'' +
-                ", column_comments='" + column_comments + '\'' +
-                ", data_type='" + data_type + '\'' +
-                ", primary_key='" + primary_key + '\'' +
-                '}';
+        if (table_comments != null && !table_comments.isEmpty()) {
+            return table_nm + " (" + table_comments + ")";
+        }
+        return table_nm;
     }
 }

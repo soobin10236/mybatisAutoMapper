@@ -3,13 +3,11 @@ package org.dev.mybatisautomapper.view;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
-import javafx.util.Duration;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.dev.mybatisautomapper.model.ColumnInfo;
 import org.dev.mybatisautomapper.service.AiService;
 import org.dev.mybatisautomapper.service.AiServiceFactory;
 import org.dev.mybatisautomapper.service.TableInfoService;
@@ -20,7 +18,7 @@ import org.dev.mybatisautomapper.viewmodel.MainViewModel;
 import org.fxmisc.richtext.CodeArea;
 
 import java.util.Collection;
-import java.util.function.UnaryOperator;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 
@@ -55,6 +53,8 @@ public class MainViewController {
 
     private MainViewModel vm;
 
+    private boolean isSelectionInProgress = false;  //드롭다운 선택 관련 플래그
+
     @FXML
     public void initialize() {
         // 1) 설정 로드
@@ -84,25 +84,73 @@ public class MainViewController {
         tableInput.textProperty().bindBidirectional(vm.tableName);
         // 자동완성 기능 바인딩
 
-        // 1. 자동완성 제안 규칙(Callback)을 정의합니다.
-        Callback<AutoCompletionBinding.ISuggestionRequest, Collection<String>> suggestionProvider = request -> {
+        // 1. 자동완성 제안 규칙 (Callback) - TableInfo 객체를 필터링
+        Callback<AutoCompletionBinding.ISuggestionRequest, Collection<ColumnInfo>> suggestionProvider = request -> {
+            //자동으로 선택이 완료 됐을때는 플래그를 주고 콜백을 못하게 처리함.
+            if (isSelectionInProgress) {
+                isSelectionInProgress = false; // 플래그 즉시 리셋
+                return Collections.emptyList();
+            }
+
             // 사용자가 입력한 텍스트를 가져와서 대문자로 변환
             String userInput = request.getUserText().toUpperCase();
 
-            // 16,000개의 캐시된 테이블 목록(vm.cachedTableNames)에서
-            // 대문자 입력값(userInput)으로 "시작하는(startsWith)" 항목만 필터링
+            // [개선] 사용자가 2글자 미만 입력 시, 빈 리스트를 반환하여 검색 방지
+            if (userInput.length() < 2) {
+                return Collections.emptyList();
+            }
+
+            // 테이블 목록(vm.cachedTableNames)에서
+            // 가중치 기반 정렬
             return vm.cachedTableNames.stream()
-                    .filter(tableName -> tableName.startsWith(userInput))
-                    .collect(Collectors.toList());
+                .filter(tableInfo ->
+                    tableInfo.getTable_nm().contains(userInput)
+                )
+                .sorted((a, b) -> {
+                    boolean aStarts = a.getTable_nm().startsWith(userInput);
+                    boolean bStarts = b.getTable_nm().startsWith(userInput);
+                    if (aStarts && !bStarts) return -1;
+                    if (!aStarts && bStarts) return 1;
+                    return a.getTable_nm().compareTo(b.getTable_nm());
+                })
+                .limit(200)
+                .collect(Collectors.toList());
         };
 
-        // 2. 자동완성 기능을 바인딩할 때, 위에서 만든 커스텀 제안 규칙(suggestionProvider)을 전달합니다.
-        TextFields.bindAutoCompletion(tableInput, suggestionProvider);
+        // 2. 자동완성 바인딩 (ColumnInfo의 toString()이 사용됨)
+        AutoCompletionBinding<ColumnInfo> binding = TextFields.bindAutoCompletion(tableInput, suggestionProvider);
 
-        // 3. (선택 사항) 사용자가 'hr_'를 입력하면 자동으로 'HR_'로 변환되도록 리스너를 다시 추가합니다.
-        //    (자동완성 팝업 자체는 대소문자를 구분하지 않지만, UI 일관성을 위해)
+        // 3. 선택 완료 이벤트에서 table_nm만 TextField에 설정
+        binding.setOnAutoCompleted(event -> {
+            ColumnInfo selected = event.getCompletion();
+
+            // 현재의 '자동완성 선택' 이벤트 사이클이 끝난 뒤로 예약합니다.
+            if (selected != null) {
+                Platform.runLater(() -> {
+                    String tableName = selected.getTable_nm();
+                    
+                    // 텍스트를 변경하기전에 플래그를 true로 설정
+                    isSelectionInProgress = true;
+                    vm.tableName.set(tableName);
+                    // 커서를 텍스트 맨 뒤로 이동
+                    tableInput.positionCaret(tableName.length());
+
+                    vm.onFetchColumns();
+                });
+            }
+        });
+
+        //팝업 크기 설정
+        binding.setPrefWidth(400);
+
+        // UI 의 소문자도 대문자로 리턴
         tableInput.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && !newVal.equals(newVal.toUpperCase())) {
+
+                if (isSelectionInProgress) {//"선택 완료" 이벤트가 진행 중일 때는 이 리스너도 동작하지 않도록 방지
+                    return;
+                }
+
                 Platform.runLater(() -> {
                     int caretPos = tableInput.getCaretPosition();
                     // ViewModel의 값을 변경하면 bindBidirectional을 통해 TextField도 변경됨
